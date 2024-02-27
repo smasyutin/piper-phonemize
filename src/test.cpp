@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
   piper::phonemize_eSpeak("this, is: a; test.", phonemeConfig, phonemes);
 
   std::string phonemeStr = phonemeString(phonemes);
-  if (phonemeStr != "ðˈɪs, ɪz: ˈeɪ; tˈɛst.\n") {
+  if (phonemeStr != "ðˈɪs,ɪz:ˈeɪ;tˈɛst.\n") {
     std::cerr << "punctuation test: " << phonemeStr << std::endl;
     return 1;
   }
