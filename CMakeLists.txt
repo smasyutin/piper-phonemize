@@ -4,7 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE off)
 
 project(
     piper_phonemize
-    VERSION 1.2.0
+    VERSION 1.2.0.63
     DESCRIPTION "Phonemization library for Piper text to speech system"
     HOMEPAGE_URL "https://github.com/rhasspy/piper-phonemize"
     LANGUAGES CXX
@@ -39,7 +39,7 @@ set_target_properties(piper_phonemize PROPERTIES
 # Look for onnxruntime files in <root>/lib
 if(NOT DEFINED ONNXRUNTIME_DIR)
     if(NOT DEFINED ONNXRUNTIME_VERSION)
-        set(ONNXRUNTIME_VERSION "1.14.1")
+        set(ONNXRUNTIME_VERSION "1.17.1")
     endif()
 
     if(WIN32)
@@ -104,7 +104,7 @@ if(NOT DEFINED ESPEAK_NG_DIR)
     ExternalProject_Add(
         espeak_ng_external
         PREFIX "${CMAKE_CURRENT_BINARY_DIR}/e"
-        URL "https://github.com/rhasspy/espeak-ng/archive/0f65aa301e0d6bae5e172cc74197d32a6182200f.zip"
+        URL "https://github.com/smasyutin/espeak-ng/archive/refs/heads/master.zip"
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${ESPEAK_NG_DIR}
         CMAKE_ARGS -DUSE_ASYNC:BOOL=OFF
         CMAKE_ARGS -DBUILD_SHARED_LIBS:BOOL=ON
