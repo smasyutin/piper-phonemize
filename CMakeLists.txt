@@ -61,7 +61,11 @@ if(NOT DEFINED ONNXRUNTIME_DIR)
     else()
         if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
             # Linux x86-64
-            set(ONNXRUNTIME_PREFIX "onnxruntime-linux-x64-${ONNXRUNTIME_VERSION}")
+            if(USE_CUDA)
+                set(ONNXRUNTIME_PREFIX "onnxruntime-linux-x64-cuda12-${ONNXRUNTIME_VERSION}")
+            else()
+                set(ONNXRUNTIME_PREFIX "onnxruntime-linux-x64-${ONNXRUNTIME_VERSION}")
+            endif()
         elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)
             # Linux ARM 64-bit
             set(ONNXRUNTIME_PREFIX "onnxruntime-linux-aarch64-${ONNXRUNTIME_VERSION}")
@@ -92,6 +96,10 @@ if(NOT DEFINED ONNXRUNTIME_DIR)
 
         # Extract .zip or .tgz to a directory like lib/onnxruntime-linux-x64-1.14.1/
         file(ARCHIVE_EXTRACT INPUT "download/${ONNXRUNTIME_FILENAME}" DESTINATION "${CMAKE_CURRENT_LIST_DIR}/lib")
+
+        # NOTE: for CUDA12 the archive contains "cuda12", but the unpacked folder is _just_ "cuda".
+        # To overcome this inconvenience we list what's unpacked and use it.
+        file(GLOB ONNXRUNTIME_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/onnxruntime*")
     endif()
 endif()
 
