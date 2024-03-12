@@ -62,7 +62,7 @@ if(NOT DEFINED ONNXRUNTIME_DIR)
         if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
             # Linux x86-64
             if(USE_CUDA)
-                set(ONNXRUNTIME_PREFIX "onnxruntime-linux-x64-cuda12-${ONNXRUNTIME_VERSION}")
+                set(ONNXRUNTIME_PREFIX "onnxruntime-linux-x64-${USE_CUDA}-${ONNXRUNTIME_VERSION}")
             else()
                 set(ONNXRUNTIME_PREFIX "onnxruntime-linux-x64-${ONNXRUNTIME_VERSION}")
             endif()
