@@ -105,10 +105,27 @@ endif()
 
 # ---- espeak-ng ---
 
-if(NOT DEFINED ESPEAK_NG_DIR)
-    set(ESPEAK_NG_DIR "${CMAKE_CURRENT_BINARY_DIR}/ei")
+set(ESPEAK_NG_DIR "${CMAKE_CURRENT_BINARY_DIR}/ei")
+include(ExternalProject)
 
-    include(ExternalProject)
+if(DEFINED ESPEAK_NG_SRC_DIR)
+    ExternalProject_Add(
+        espeak_ng_external
+        PREFIX "${CMAKE_CURRENT_BINARY_DIR}/e"
+        SOURCE_DIR ${ESPEAK_NG_SRC_DIR}
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${ESPEAK_NG_DIR}
+        CMAKE_ARGS -DUSE_ASYNC:BOOL=OFF
+        CMAKE_ARGS -DBUILD_SHARED_LIBS:BOOL=ON
+        CMAKE_ARGS -DUSE_MBROLA:BOOL=OFF
+        CMAKE_ARGS -DUSE_LIBSONIC:BOOL=OFF
+        CMAKE_ARGS -DUSE_LIBPCAUDIO:BOOL=OFF
+        CMAKE_ARGS -DUSE_KLATT:BOOL=OFF
+        CMAKE_ARGS -DUSE_SPEECHPLAYER:BOOL=OFF
+        CMAKE_ARGS -DEXTRA_cmn:BOOL=ON
+        CMAKE_ARGS -DEXTRA_ru:BOOL=ON
+        CMAKE_ARGS -DCMAKE_C_FLAGS="-D_FILE_OFFSET_BITS=64"
+    )
+else()
     ExternalProject_Add(
         espeak_ng_external
         PREFIX "${CMAKE_CURRENT_BINARY_DIR}/e"
@@ -125,8 +142,9 @@ if(NOT DEFINED ESPEAK_NG_DIR)
         CMAKE_ARGS -DEXTRA_ru:BOOL=ON
         CMAKE_ARGS -DCMAKE_C_FLAGS="-D_FILE_OFFSET_BITS=64"
     )
-    add_dependencies(piper_phonemize espeak_ng_external)
 endif()
+
+add_dependencies(piper_phonemize espeak_ng_external)
 
 
 # ---- Declare library ----
