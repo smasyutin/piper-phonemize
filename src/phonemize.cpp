@@ -1,4 +1,5 @@
 #include <map>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,14 @@ phonemize_eSpeak(std::string text, eSpeakPhonemeConfig &config,
     throw std::runtime_error("Failed to set eSpeak-ng voice");
   }
 
+  phonemize_eSpeak_loadedVoice(text, config, phonemes);
+}
+
+PIPERPHONEMIZE_EXPORT void
+phonemize_eSpeak_loadedVoice(std::string text, eSpeakPhonemeConfig& config,
+                 std::vector<std::vector<Phoneme>>& phonemes) {
+
+  auto voice = config.voice;
   std::shared_ptr<PhonemeMap> phonemeMap;
   if (config.phonemeMap) {
     phonemeMap = config.phonemeMap;
@@ -33,17 +42,30 @@ phonemize_eSpeak(std::string text, eSpeakPhonemeConfig &config,
 
   // Modified by eSpeak
   std::string textCopy(text);
+  std::vector<std::string> clauses;
+  std::vector<int> clauseTerminators;
 
-  std::vector<Phoneme> *sentencePhonemes = nullptr;
-  const char *inputTextPointer = textCopy.c_str();
-  int terminator = 0;
+  std::vector<Phoneme>* sentencePhonemes = nullptr;
+  const char* inputTextPointer = textCopy.c_str();
 
+  // do all the espeak work first...
   while (inputTextPointer != NULL) {
+    int terminator = 0;
+    // std::unique_lock lockESpeak{ espeak_mutex };
     // Modified espeak-ng API to get access to clause terminator
     std::string clausePhonemes(espeak_TextToPhonemesWithTerminator(
         (const void **)&inputTextPointer,
         /*textmode*/ espeakCHARS_AUTO,
-        /*phonememode = IPA*/ 0x02, &terminator));
+      /*phonememode = IPA*/ espeakPHONEMES_IPA, &terminator));
+
+    clauses.push_back(clausePhonemes);
+    clauseTerminators.push_back(terminator);
+  }
+
+  // ...then go to phonemize internal processing
+  for (int i = 0; i < clauses.size(); i++) {
+    std::string clausePhonemes = clauses[i];
+    int terminator = clauseTerminators[i];
 
     // Decompose, e.g. "ç" -> "c" + "̧"
     auto phonemesNorm = una::norm::to_nfd_utf8(clausePhonemes);
