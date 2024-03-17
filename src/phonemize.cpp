@@ -51,7 +51,6 @@ phonemize_eSpeak_loadedVoice(std::string text, eSpeakPhonemeConfig& config,
   // do all the espeak work first...
   while (inputTextPointer != NULL) {
     int terminator = 0;
-    // std::unique_lock lockESpeak{ espeak_mutex };
     // Modified espeak-ng API to get access to clause terminator
     std::string clausePhonemes(espeak_TextToPhonemesWithTerminator(
         (const void **)&inputTextPointer,
