@@ -11,7 +11,8 @@
 
 namespace piper {
 
-std::mutex epseakMutex;
+// espeak-ng has has a lot of shared state by design
+std::mutex espeakMutex;
 
 // language -> phoneme -> [phoneme, ...]
 std::map<std::string, PhonemeMap> DEFAULT_PHONEME_MAP = {
@@ -53,7 +54,9 @@ phonemize_eSpeak_loadedVoice(std::string text, eSpeakPhonemeConfig& config,
   // do all the espeak work first...
   while (inputTextPointer != NULL) {
     int terminator = 0;
-    std::unique_lock espeakLock{ epseakMutex };
+    // espeak-ng has has a lot of shared state by design
+    // lock it from other threads
+    std::unique_lock espeakLock{ espeakMutex };
     // Modified espeak-ng API to get access to clause terminator
     std::string clausePhonemes(espeak_TextToPhonemesWithTerminator(
         (const void **)&inputTextPointer,
