@@ -11,6 +11,8 @@
 
 namespace piper {
 
+std::mutex epseakMutex;
+
 // language -> phoneme -> [phoneme, ...]
 std::map<std::string, PhonemeMap> DEFAULT_PHONEME_MAP = {
     {"pt-br", {{U'c', {U'k'}}}}};
@@ -51,6 +53,7 @@ phonemize_eSpeak_loadedVoice(std::string text, eSpeakPhonemeConfig& config,
   // do all the espeak work first...
   while (inputTextPointer != NULL) {
     int terminator = 0;
+    std::unique_lock espeakLock{ epseakMutex };
     // Modified espeak-ng API to get access to clause terminator
     std::string clausePhonemes(espeak_TextToPhonemesWithTerminator(
         (const void **)&inputTextPointer,
